@@ -34,33 +34,46 @@ def initArchive(archivePath):
                         data = lineNew.split(' ')[-3]
                         dataPnt = data
                         puntos[dataPnt] = dictLetter[letterAct] + ('' if letterNum == 0 else str(letterNum))
-                            
+                                
                         letterAct += 1
                         if len(dictLetter) == letterAct:
                             letterAct = 0
                             letterNum += 1
-    textComplete = ""
-
+    textForNum = [
+        'GL_POINTS',
+        'GL_LINES',
+        'GL_TRIANGLES',
+        'GL_QUADS',
+        'GL_POLYGON'
+    ]
+    txt = ""
     with open(archivePath, 'r') as arch:
         for line in arch:
-            lineNew = line.strip()
-            if lineNew[0:5] == r'\fill':
-                txt = lineNew[5:].split(' ')
+            line = line.strip()
+            if line[0:5] == r'\fill':
+                # print(line)
+                dta = line.split('] ')[1].split(' -- ')[:-1]
+
+                countPoints = len(dta)
+                txt += f"//Triangle "
+                for i in range(countPoints):
+                    txt += ' - ' + str(puntos[dta[1]])
+
+                txt += f"\nglColor3ub(0 , 0, 0);\n"
+                print( "Cantidad: " , countPoints)
+                txt += f"glBegin({textForNum[countPoints-1] if (countPoints) < 5 else textForNum[4]});\n"
+
+                # print(txt)
+                # print(dta)
+                # print('LengData: ' + str(countPoints))
+
+                for i in range(countPoints):
+                    txt += f"\tglVertex2f{dta[i]};\n"
+                txt += f"glEnd();\n\n"
                 
-                p1 = txt[3]
-                p2 = txt[5]
-                p3 = txt[7]
-                print(p1 + " / " + p2 + ' /' + p3)
-                textComplete+=(f'''
-//Triangle {puntos[p1]} - {puntos[p2]} - {puntos[p3]}
-glColor3ub(0 , 0, 0);
-glBegin(GL_TRIANGLES);
-    glVertex2f{p1};
-    glVertex2f{p2};
-    glVertex2f{p3};
-glEnd();\n''')
+                # print(line.split(' ')[3])
     
-    return textComplete
+    return txt
             
 def tkDraw():
     botonSelect = tk.Button(app, text='Seleccionar archivo', command=btn_Clicked)
