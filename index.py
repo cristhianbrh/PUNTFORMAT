@@ -1,6 +1,7 @@
 import tkinter as tk, threading
 from tkinter import filedialog
-from selectColor import init_color_select
+import pyautogui
+from pynput.mouse import Listener, Button
 
 # Cristhianbrh
 class NewWindowDialog():
@@ -26,26 +27,24 @@ class NewWindowDialog():
         # dialog.grab_set()
 
 def btn_Clicked():
-    global newWindowDialog
-    newWindowDialog = NewWindowDialog()
+    # global newWindowDialog
+    # newWindowDialog = NewWindowDialog()
     
     archiveSelect = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt")])
     archive = ""
     if(archiveSelect):
-        newWindowDialog.new_window()
-        color_thread = threading.Thread(target=init_color_select)
-        color_thread.start()
-                # color_thread.join()
+        # newWindowDialog.new_window()
 
-        archive = initArchive(archiveSelect, color_thread)
-
+        archive = initArchive(archiveSelect)
 
         saveArchive = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
         if(saveArchive):
             with open(saveArchive, 'w') as archiveSave:
                 archiveSave.write(archive)
 
-def initArchive(archivePath, color_thread:threading.Thread):
+
+
+def initArchive(archivePath):
     dictLetter = 'ABCDEFGHIJKLMNOPQRSTUVWZ'
     letterNum = 0
 
@@ -90,13 +89,37 @@ def initArchive(archivePath, color_thread:threading.Thread):
                 txt += f"//Polygon "
                 pointsDt = ""
                 for i in range(countPoints):
-                    pointsDt += (' - ' if i == 0 else '') + str(puntos[dta[1]])
+                    pointsDt += (' - ' if i != 0 else '') + str(puntos[dta[i]])
+                print(pointsDt)
 
-                newWindowDialog.setParamsPoints(pointsDt)
+                # colorDataPolygon = ""
+                def saveOnClick(x, y, button, pressed):
+                    if pressed and button == Button.right:
+                        global colorDataPolygon
+                        print("Ingresado")
+                        r,g,b = pyautogui.pixel(x,y)
+                        colorDataPolygon = f'(({round(r/255, 4)}),({round(g/255, 4)}),({round(b/255, 4)}))'
+                        listener.stop()
+                        # return f'({r}/255,{g}/255,{b}/255)'
+
+                app.withdraw()
+                with Listener(on_click=saveOnClick) as listener:
+                    listener.join()
+
+                app.deiconify()
+                print(colorDataPolygon)
+                # newWindowDialog.setParamsPoints(pointsDt)
                 
+                # exit_flag = False
+                # while not exit_flag: 
+                #     pyautogui.sleep(0.3)
+
+                #     with Listener(on_click=saveOnClick) as listener:
+                #         listener.join()
+
 
                 txt += pointsDt
-                txt += f"\nglColor3ub(0 , 0, 0);\n"
+                txt += f"\nglColor3f{colorDataPolygon};\n"
                 print( "Cantidad: " , countPoints)
                 txt += f"glBegin({textForNum[countPoints-1] if (countPoints) < 5 else textForNum[4]});\n"
 
@@ -111,7 +134,7 @@ def tkDraw():
 
 def __main__():
     global app 
-
+    # global exit_flag
     app = tk.Tk()
     
 
