@@ -83,10 +83,13 @@ def tkDraw():
     # tk.Text("Paso 1: Dibujar en geogebra clasico").pack()
     # tk.Text("Paso 2: Exportar archivo en formato PGF/TikZ(.txt) ").pack()
 
+def __main__():
+    global app 
+    app = tk.Tk()
+    app.geometry("400x300")
+    app.title("PUNTFORMAT")
+    tkDraw()
+    app.mainloop()
 
-app = tk.Tk()
-app.geometry("400x300")
-app.title("PUNTFORMAT")
-tkDraw()
-app.mainloop()
-
+if __name__ == "__main__":
+    __main__()
