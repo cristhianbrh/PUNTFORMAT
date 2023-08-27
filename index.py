@@ -1,7 +1,9 @@
 import tkinter as tk, threading
 from tkinter import filedialog
 import pyautogui
+from plyer import notification
 from pynput.mouse import Listener, Button
+
 
 # Cristhianbrh
 class NewWindowDialog():
@@ -25,6 +27,8 @@ class NewWindowDialog():
         label.pack(padx=20, pady=20)
         dialog.lift()
         # dialog.grab_set()
+
+
 
 def btn_Clicked():
     # global newWindowDialog
@@ -91,6 +95,8 @@ def initArchive(archivePath):
                 for i in range(countPoints):
                     pointsDt += (' - ' if i != 0 else '') + str(puntos[dta[i]])
                 print(pointsDt)
+
+                notification.notify(title= 'PUNTFORMAT', message=pointsDt, timeout=10, ticker=pointsDt)
 
                 # colorDataPolygon = ""
                 def saveOnClick(x, y, button, pressed):
