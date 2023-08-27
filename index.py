@@ -1,5 +1,6 @@
-import tkinter as tk, time
+import tkinter as tk, threading
 from tkinter import filedialog
+from selectColor import init_color_select
 
 # Cristhianbrh
 class NewWindowDialog():
@@ -9,33 +10,42 @@ class NewWindowDialog():
         self.pixelColor = tk.StringVar()
         self.pixelColor.set("(0,0,0)")
 
-    # def setParams(self, points):
-    #     self.points.set(points)
+    def setParamsPoints(self, points):
+        self.points.set(points)
     
-    # def setParams(self, pixelColor):
-    #     self.pixelColor.set(pixelColor)
+    def setParamsColors(self, pixelColor):
+        self.pixelColor.set(pixelColor)
 
     def new_window(self):
         dialog = tk.Toplevel(app)
         dialog.title("Puntformat")
+        
         label = tk.Label(dialog, text=f"Cuadrante {self.points.get()}: {self.pixelColor.get()}")
         label.pack(padx=20, pady=20)
-        dialog.grab_set()
+        dialog.lift()
+        # dialog.grab_set()
 
 def btn_Clicked():
+    global newWindowDialog
+    newWindowDialog = NewWindowDialog()
+    
     archiveSelect = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt")])
     archive = ""
     if(archiveSelect):
-        archive = initArchive(archiveSelect)
-
         newWindowDialog.new_window()
+        color_thread = threading.Thread(target=init_color_select)
+        color_thread.start()
+                # color_thread.join()
+
+        archive = initArchive(archiveSelect, color_thread)
+
 
         saveArchive = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
         if(saveArchive):
             with open(saveArchive, 'w') as archiveSave:
                 archiveSave.write(archive)
 
-def initArchive(archivePath):
+def initArchive(archivePath, color_thread:threading.Thread):
     dictLetter = 'ABCDEFGHIJKLMNOPQRSTUVWZ'
     letterNum = 0
 
@@ -82,50 +92,33 @@ def initArchive(archivePath):
                 for i in range(countPoints):
                     pointsDt += (' - ' if i == 0 else '') + str(puntos[dta[1]])
 
-                newWindowDialog.points.set(pointsDt)
+                newWindowDialog.setParamsPoints(pointsDt)
+                
 
                 txt += pointsDt
                 txt += f"\nglColor3ub(0 , 0, 0);\n"
                 print( "Cantidad: " , countPoints)
                 txt += f"glBegin({textForNum[countPoints-1] if (countPoints) < 5 else textForNum[4]});\n"
 
-                # print(txt)
-                # print(dta)
-                # print('LengData: ' + str(countPoints))
-
                 for i in range(countPoints):
                     txt += f"\tglVertex2f{dta[i]};\n"
                 txt += f"glEnd();\n\n"
-                
-                # print(line.split(' ')[3])
-    
     return txt
             
 def tkDraw():
     botonSelect = tk.Button(app, text='Seleccionar archivo', command=btn_Clicked)
     botonSelect.pack()
 
-    
-
-    # tk.Text("Este es un programa generado y creado por Cristhian Alexander Bautista Ruiz").pack()
-    # tk.Text("Indicaciónes: ").pack()
-    # tk.Text("Paso 1: Dibujar en geogebra clasico").pack()
-    # tk.Text("Paso 2: Exportar archivo en formato PGF/TikZ(.txt) ").pack()
-
-# def windowTofront():
-#     app.lift()
-#     app.after(100, windowTofront)
-
 def __main__():
     global app 
-    global newWindowDialog
+
     app = tk.Tk()
-    newWindowDialog = NewWindowDialog()
+    
 
     app.geometry("400x300")
     app.title("PUNTFORMAT")
     tkDraw()
-    # windowTofront()
+
     app.mainloop()
 
 
