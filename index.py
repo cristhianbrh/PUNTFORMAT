@@ -1,4 +1,4 @@
-import tkinter as tk, threading
+import tkinter as tk
 from tkinter import filedialog
 import pyautogui
 from plyer import notification
@@ -102,7 +102,7 @@ def initArchive(archivePath):
                 def saveOnClick(x, y, button, pressed):
                     if pressed and button == Button.right:
                         global colorDataPolygon
-                        print("Ingresado")
+                        # print("Ingresado")
                         r,g,b = pyautogui.pixel(x,y)
                         colorDataPolygon = f'(({round(r/255, 4)}),({round(g/255, 4)}),({round(b/255, 4)}))'
                         listener.stop()
@@ -113,7 +113,7 @@ def initArchive(archivePath):
                     listener.join()
 
                 app.deiconify()
-                print(colorDataPolygon)
+                # print(colorDataPolygon)
                 # newWindowDialog.setParamsPoints(pointsDt)
                 
                 # exit_flag = False
@@ -126,7 +126,7 @@ def initArchive(archivePath):
 
                 txt += pointsDt
                 txt += f"\nglColor3f{colorDataPolygon};\n"
-                print( "Cantidad: " , countPoints)
+                # print( "Cantidad: " , countPoints)
                 txt += f"glBegin({textForNum[countPoints-1] if (countPoints) < 5 else textForNum[4]});\n"
 
                 for i in range(countPoints):
@@ -139,6 +139,7 @@ def tkDraw():
     botonSelect.pack()
 
 def __main__():
+
     global app 
     # global exit_flag
     app = tk.Tk()
@@ -146,6 +147,7 @@ def __main__():
 
     app.geometry("400x300")
     app.title("PUNTFORMAT")
+    # app.iconbitmap('./PuntFormatIcon.ico')
     tkDraw()
 
     app.mainloop()
