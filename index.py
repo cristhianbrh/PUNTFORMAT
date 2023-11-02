@@ -144,10 +144,10 @@ def __main__():
     # global exit_flag
     app = tk.Tk()
     
-
+    app.attributes('-topmost', True)
     app.geometry("400x300")
     app.title("PUNTFORMAT")
-    # app.iconbitmap('./PuntFormatIcon.ico')
+    app.iconbitmap('./PuntFormatIcon.ico')
     tkDraw()
 
     app.mainloop()
